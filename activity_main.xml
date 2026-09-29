@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ভিজিটিং কার্ড স্ক্যানার"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:paddingBottom="6dp"/>
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="কার্ডের ছবি তুলুন বা গ্যালারি থেকে নিন"
+        android:textSize="15sp"
+        android:paddingBottom="12dp"/>
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/imagePreview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        android:contentDescription="Card preview"/>
+
+    <ScrollView
+        android:id="@+id/resultScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:paddingBottom="8dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="নাম">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/nameInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="ফোন">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/phoneInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="ইমেইল">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/emailInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="কোম্পানি">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/companyInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="পদবি">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/jobInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="ঠিকানা / ওয়েবসাইট">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/notesInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minLines="2"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📇 Contacts-এ সেভ করুন"
+                android:layout_marginTop="12dp"/>
+
+            <Button
+                android:id="@+id/rescanButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔄 আরেকটি কার্ড স্ক্যান করুন"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/homeButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/cameraButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📷  Scan with Camera"/>
+
+        <Button
+            android:id="@+id/galleryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🖼  Choose from Gallery"/>
+    </LinearLayout>
+</LinearLayout>
