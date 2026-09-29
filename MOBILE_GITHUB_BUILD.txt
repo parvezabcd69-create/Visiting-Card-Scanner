@@ -1,0 +1,13 @@
+PHONE-ONLY BUILD
+
+1. Create a new GitHub repository.
+2. Upload all files/folders from this project ZIP.
+3. Make sure .github/workflows/build-apk.yml is uploaded.
+4. Open Actions.
+5. Select "Build Android APK".
+6. Tap "Run workflow".
+7. Wait for the green check.
+8. Open the run and download "VisitingCardScanner-APK".
+9. Extract it and install app-debug.apk.
+
+This workflow installs Gradle and Android SDK on GitHub's build machine, so no Android Studio is needed on your phone.
