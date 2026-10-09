@@ -1,3 +1,4 @@
+
 package com.example.visitingcardscanner
 
 object CardParser {
@@ -7,8 +8,9 @@ object CardParser {
         RegexOption.IGNORE_CASE
     )
 
+    // example.com, www.example.com, https://example.com
     private val urlRegex = Regex(
-        """(?i)\b(?:https?://)?(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+\.[a-z]{2,}(?:/[^\s,;]*)?|\bwww\.[a-z0-9.-]+\.[a-z]{2,}(?:/[^\s,;]*)?"""
+        """(?i)(?<![@\w-])(?:(?:https?://)|(?:www\.))?[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+\.[a-z]{2,}(?::\d{1,5})?(?:/[^\s,;<>]*)?"""
     )
 
     private val phoneRegex = Regex(
@@ -47,8 +49,11 @@ object CardParser {
         val email = emailRegex.find(raw)?.value.orEmpty()
 
         val website = urlRegex.findAll(raw)
-            .map { it.value.trim().trimEnd('.', ',', ';', ')', ']') }
-            .firstOrNull { !it.contains("@") }
+            .map { it.value.trim().trimEnd('.', ',', ';', ')', ']', ':') }
+            .firstOrNull { candidate ->
+                !candidate.contains("@") &&
+                !email.contains(candidate, ignoreCase = true)
+            }
             .orEmpty()
 
         val phone = phoneRegex.findAll(raw)
@@ -79,16 +84,16 @@ object CardParser {
 
         val company = others.firstOrNull { line ->
             line != job &&
-                companyWords.any { line.contains(it, true) }
+            companyWords.any { line.contains(it, true) }
         }.orEmpty()
 
         val name = others.firstOrNull { line ->
             line != job &&
-                line != company &&
-                line.count { it.isLetter() } >= 3 &&
-                !line.contains("@") &&
-                !urlRegex.containsMatchIn(line) &&
-                !addressWords.any { line.contains(it, true) }
+            line != company &&
+            line.count { it.isLetter() } >= 3 &&
+            !line.contains("@") &&
+            !urlRegex.containsMatchIn(line) &&
+            !addressWords.any { line.contains(it, true) }
         }.orEmpty()
 
         val notes = others.filter {
