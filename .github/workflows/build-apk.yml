@@ -3,17 +3,23 @@ name: Build Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
 
 jobs:
   build:
+    name: Build Visiting Card Scanner
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -24,22 +30,31 @@ jobs:
         with:
           gradle-version: "8.10"
 
-- name: Set up Android SDK
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: ''
 
-      - name: Install Android SDK
-        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
-      - name: Install Android SDK
-        run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
 
       - name: Prepare Android project
+        shell: bash
         run: |
+          set -euo pipefail
+
           mkdir -p app/src/main/java/com/example/visitingcardscanner
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/values
+
+          test -f AndroidManifest.xml
+          test -f MainActivity.kt
+          test -f CardParser.kt
+          test -f activity_main.xml
+          test -f styles.xml
+          test -f settings.gradle.kts
 
           cp AndroidManifest.xml app/src/main/AndroidManifest.xml
           cp MainActivity.kt app/src/main/java/com/example/visitingcardscanner/
@@ -75,6 +90,15 @@ jobs:
               buildFeatures {
                   viewBinding = true
               }
+
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
           }
 
           dependencies {
@@ -83,18 +107,23 @@ jobs:
               implementation("com.google.android.material:material:1.12.0")
               implementation("androidx.activity:activity-ktx:1.10.0")
               implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+
               implementation("androidx.camera:camera-camera2:1.4.1")
               implementation("androidx.camera:camera-lifecycle:1.4.1")
               implementation("androidx.camera:camera-view:1.4.1")
+
               implementation("com.google.mlkit:text-recognition:16.0.1")
           }
           EOF
 
-      - name: Build APK
-        run: gradle assembleDebug --no-daemon
+      - name: Build debug APK
+        run: gradle --no-daemon assembleDebug
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: VisitingCardScanner-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
