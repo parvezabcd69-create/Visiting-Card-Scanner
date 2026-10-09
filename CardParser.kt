@@ -8,36 +8,34 @@ object CardParser {
     )
 
     private val urlRegex = Regex(
-        """(?i)\b(?:https?://)?(?:www\.)?[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+(?:/[^\s,;]*)?"""
+        """(?i)\b(?:https?://)?(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+\.[a-z]{2,}(?:/[^\s,;]*)?|\bwww\.[a-z0-9.-]+\.[a-z]{2,}(?:/[^\s,;]*)?"""
     )
 
     private val phoneRegex = Regex(
-        """(?<!\d)(?:\+?\d[\d\s().-]{6,}\d)(?!\d)"""
+        """(?<!\d)\+?\d[\d\s().-]{6,}\d(?!\d)"""
     )
 
     private val jobWords = listOf(
-        "ceo", "cto", "cfo", "coo", "founder", "co-founder",
-        "director", "managing director", "manager", "engineer",
-        "developer", "consultant", "executive", "chairman",
-        "president", "sales", "marketing", "officer", "owner",
+        "ceo", "cto", "cfo", "coo", "founder", "director",
+        "manager", "engineer", "developer", "consultant",
+        "executive", "chairman", "president", "officer",
         "ডিরেক্টর", "পরিচালক", "ব্যবস্থাপক", "ম্যানেজার",
-        "প্রকৌশলী", "প্রধান নির্বাহী", "চেয়ারম্যান", "চেয়ারম্যান",
-        "স্বত্বাধিকারী", "কর্মকর্তা"
+        "প্রকৌশলী", "চেয়ারম্যান", "চেয়ারম্যান", "কর্মকর্তা"
     )
 
     private val addressWords = listOf(
-        "address", "road", "rd.", "street", "st.", "avenue",
-        "ave.", "lane", "floor", "building", "house", "village",
-        "district", "postal", "postcode", "zip",
-        "ঠিকানা", "রোড", "সড়ক", "সড়ক", "গ্রাম", "উপজেলা",
-        "জেলা", "বাড়ি", "বাড়ি", "ভবন", "ডাকঘর", "পোস্ট কোড"
+        "address", "road", "street", "avenue", "lane",
+        "floor", "building", "house", "village", "district",
+        "postal", "postcode", "zip", "ঠিকানা", "রোড", "সড়ক",
+        "সড়ক", "গ্রাম", "উপজেলা", "জেলা", "বাড়ি", "বাড়ি",
+        "ভবন", "ডাকঘর"
     )
 
     private val companyWords = listOf(
-        "ltd", "limited", "inc.", "incorporated", "corporation",
-        "corp.", "company", "co.", "group", "industries",
-        "solutions", "technologies", "technology", "enterprise",
-        "কোম্পানি", "লিমিটেড", "গ্রুপ", "ইন্ডাস্ট্রিজ"
+        "ltd", "limited", "inc", "corporation", "corp",
+        "company", "group", "industries", "solutions",
+        "technologies", "enterprise", "কোম্পানি", "লিমিটেড",
+        "গ্রুপ", "ইন্ডাস্ট্রিজ"
     )
 
     fun parse(raw: String): CardData {
@@ -48,76 +46,63 @@ object CardParser {
 
         val email = emailRegex.find(raw)?.value.orEmpty()
 
-        val url = urlRegex.findAll(raw)
+        val website = urlRegex.findAll(raw)
             .map { it.value.trim().trimEnd('.', ',', ';', ')', ']') }
-            .firstOrNull { candidate ->
-                !candidate.contains("@") &&
-                    candidate.substringAfterLast('.')
-                        .takeWhile { it.isLetter() }
-                        .length >= 2
-            }.orEmpty()
+            .firstOrNull { !it.contains("@") }
+            .orEmpty()
 
         val phone = phoneRegex.findAll(raw)
             .map { it.value.trim() }
-            .filter { match ->
-                val digits = match.filter(Char::isDigit)
-                digits.length in 8..15 &&
-                    !(match.contains("/") && digits.length < 10)
-            }
+            .filter { it.filter(Char::isDigit).length in 8..15 }
             .maxByOrNull { it.filter(Char::isDigit).length }
             .orEmpty()
 
         val remaining = lines.filterNot { line ->
-            (email.isNotBlank() && line.contains(email, ignoreCase = true)) ||
-                (phone.isNotBlank() &&
-                    line.filter(Char::isDigit).contains(phone.filter(Char::isDigit))) ||
-                (url.isNotBlank() && line.contains(url, ignoreCase = true))
+            (email.isNotBlank() && line.contains(email, true)) ||
+            (website.isNotBlank() && line.contains(website, true)) ||
+            (phone.isNotBlank() &&
+                line.filter(Char::isDigit).contains(
+                    phone.filter(Char::isDigit)
+                ))
         }
 
         val addressLines = remaining.filter { line ->
-            addressWords.any { word ->
-                line.contains(word, ignoreCase = true)
-            } || Regex("""\b\d{4,6}\b""").containsMatchIn(line)
+            addressWords.any { line.contains(it, true) } ||
+            Regex("""\b\d{4,6}\b""").containsMatchIn(line)
         }
 
-        val nonAddress = remaining - addressLines.toSet()
+        val others = remaining.filterNot { it in addressLines }
 
-        val jobTitle = nonAddress.firstOrNull { line ->
-            jobWords.any { word -> line.contains(word, ignoreCase = true) }
+        val job = others.firstOrNull { line ->
+            jobWords.any { line.contains(it, true) }
         }.orEmpty()
 
-        val company = nonAddress.firstOrNull { line ->
-            line != jobTitle &&
-                companyWords.any { word ->
-                    line.contains(word, ignoreCase = true)
-                }
+        val company = others.firstOrNull { line ->
+            line != job &&
+                companyWords.any { line.contains(it, true) }
         }.orEmpty()
 
-        val candidates = nonAddress.filterNot {
-            it == jobTitle || it == company
-        }
-
-        // Avoid treating an entire address, email, or URL as a person's name.
-        val name = candidates.firstOrNull { line ->
-            line.count { it.isLetter() } >= 3 &&
+        val name = others.firstOrNull { line ->
+            line != job &&
+                line != company &&
+                line.count { it.isLetter() } >= 3 &&
                 !line.contains("@") &&
                 !urlRegex.containsMatchIn(line) &&
-                !addressWords.any { word ->
-                    line.contains(word, ignoreCase = true)
-                } &&
-                !companyWords.any { word ->
-                    line.contains(word, ignoreCase = true)
-                }
+                !addressWords.any { line.contains(it, true) }
         }.orEmpty()
 
-        val notes = addressLines.joinToString("\n")
+        val notes = others.filter {
+            it != name && it != job && it != company
+        }.joinToString("\n")
 
         return CardData(
             name = name,
             phone = phone,
             email = email,
             company = company,
-            jobTitle = jobTitle,
+            jobTitle = job,
+            website = website,
+            address = addressLines.joinToString("\n"),
             notes = notes
         )
     }
