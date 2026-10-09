@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,7 +11,7 @@
         android:text="ভিজিটিং কার্ড স্ক্যানার"
         android:textSize="26sp"
         android:textStyle="bold"
-        android:paddingBottom="6dp"/>
+        android:paddingBottom="6dp" />
 
     <TextView
         android:id="@+id/subtitle"
@@ -20,23 +19,14 @@
         android:layout_height="wrap_content"
         android:text="কার্ডের ছবি তুলুন বা গ্যালারি থেকে নিন"
         android:textSize="15sp"
-        android:paddingBottom="12dp"/>
+        android:paddingBottom="12dp" />
 
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:visibility="gone"/>
-
-    <ImageView
-        android:id="@+id/imagePreview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scaleType="fitCenter"
-        android:visibility="gone"
-        android:contentDescription="Card preview"/>
+        android:visibility="gone" />
 
     <ScrollView
         android:id="@+id/resultScroll"
@@ -55,83 +45,124 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
-                android:paddingBottom="8dp"/>
+                android:paddingBottom="8dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="নাম">
+                android:hint="ব্যক্তির নাম">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/nameInput"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="ফোন">
+                android:hint="ফোন নম্বর">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/phoneInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"/>
+                    android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="ইমেইল">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"/>
+                    android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="কোম্পানি">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/companyInput"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="পদবি">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/jobInput"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="ঠিকানা / ওয়েবসাইট">
+                android:hint="ওয়েবসাইট">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/websiteInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="ঠিকানা">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/addressInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minLines="2"
+                    android:gravity="top"
+                    android:inputType="textPostalAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="অতিরিক্ত নোট (ঐচ্ছিক)">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/notesInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minLines="2"/>
+                    android:minLines="2"
+                    android:gravity="top" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/aiButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✨ AI দিয়ে তথ্য ঠিক করুন"
+                android:layout_marginTop="12dp" />
 
             <Button
                 android:id="@+id/saveButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="📇 Contacts-এ সেভ করুন"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="6dp" />
 
             <Button
                 android:id="@+id/rescanButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="🔄 আরেকটি কার্ড স্ক্যান করুন"/>
+                android:text="🔄 আরেকটি কার্ড স্ক্যান করুন" />
         </LinearLayout>
     </ScrollView>
 
@@ -145,12 +176,12 @@
             android:id="@+id/cameraButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📷  Scan with Camera"/>
+            android:text="📷 ক্যামেরা দিয়ে স্ক্যান করুন" />
 
         <Button
             android:id="@+id/galleryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🖼  Choose from Gallery"/>
+            android:text="🖼 গ্যালারি থেকে ছবি নিন" />
     </LinearLayout>
 </LinearLayout>
